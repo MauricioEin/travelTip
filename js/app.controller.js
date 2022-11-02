@@ -7,7 +7,6 @@ window.onPanTo = onPanTo
 window.onGetLocs = onGetLocs
 window.onGetUserPos = onGetUserPos
 window.onDeleteLoc = onDeleteLoc
-window.onMyLoc = onMyLoc
 
 function onInit() {
     mapService.initMap()
@@ -39,8 +38,8 @@ function checkAddMarker(pos) {
     });
 
     // Create title field and submit button
-    const inputForm = 
-    `Name:  <input type="text" id="nameinput" size="31" maxlength="31" value=""/>
+    const inputForm =
+        `Name:  <input type="text" id="nameinput" size="31" maxlength="31" value=""/>
     <button class="add-marker-btn" onclick="onUserAns(true)">Submit</button>
     <button class="cancel-marker-btn" onclick="onUserAns(false)">cancel</button>`
 
@@ -61,10 +60,11 @@ function onGetLocs() {
 
 function onGetUserPos() {
     getPosition()
-        .then(pos => {
-            console.log('User position is:', pos.coords)
+        .then(({ coords }) => {
+            console.log('User position is:', coords)
             document.querySelector('.user-pos').innerText =
-                `Latitude: ${pos.coords.latitude} - Longitude: ${pos.coords.longitude}`
+                `Latitude: ${coords.latitude} - Longitude: ${coords.longitude}`
+            mapService.panTo(coords.latitude, coords.longitude)
         })
         .catch(err => {
             console.log('err!!!', err)
@@ -73,14 +73,6 @@ function onGetUserPos() {
 function onPanTo(lat = 35.6895, lng = 139.6917) {
     console.log('Panning the Map')
     mapService.panTo(lat, lng)
-}
-
-function onMyLoc() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            mapService.panTo(position.coords.latitude, position.coords.longitude)
-        })
-    }
 }
 
 
@@ -92,7 +84,7 @@ function renderLocs(locs) {
 <p class="coords">(${loc.lat},${loc.lng})</p>
 <div class="weather"></div>
 <p class="updated">updated at ${loc.updatedAt || loc.createdAt}</p>
-<button onclick="onGoToLoc('${loc.id}')">Go</button>
+<button onclick="onPanTo(${loc.lat},${loc.lng})">Go</button>
 <button onclick="onDeleteLoc('${loc.id}')">Delete</button>
 </article>
 `)
