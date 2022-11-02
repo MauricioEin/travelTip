@@ -1,4 +1,5 @@
 import { storageService } from './storage.service.js'
+import { utils } from './util.service.js'
 
 export const locService = {
     getLocs, saveLoc, deleteLoc
@@ -6,13 +7,10 @@ export const locService = {
 
 const STORAGE_KEY = 'savedLocs'
 
-const gLocs = storageService.load(STORAGE_KEY) || [
-    { id: 1, name: 'Greatplace', lat: 32.047104, lng: 34.832384 },
-    { id: 2, name: 'Neveragain', lat: 32.047201, lng: 34.832581 }
-] 
+const gLocs = storageService.load(STORAGE_KEY) || _getInitialLocs()
 
 function getLocs() {
-    console.log('gLocs:',gLocs)
+    console.log('gLocs:', gLocs)
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve(gLocs)
@@ -20,7 +18,15 @@ function getLocs() {
     })
 }
 
-function saveLoc(loc) {
+function saveLoc(name, { lat, lng }) {
+    const loc = {
+        name,
+        lat,
+        lng,
+        id: utils.makeId(),
+        createdAt: Date.now()
+    }
+
     gLocs.unshift(loc)
     saveLocsToStorage()
 }
@@ -35,3 +41,9 @@ function saveLocsToStorage() {
 }
 
 
+function _getInitialLocs() {
+    return [
+        { id: 1, name: 'Greatplace', lat: 32.047104, lng: 34.832384 },
+        { id: 2, name: 'Neveragain', lat: 32.047201, lng: 34.832581 }
+    ]
+}

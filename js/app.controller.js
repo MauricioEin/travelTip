@@ -4,7 +4,7 @@ import { mapService } from './services/map.service.js'
 window.onload = onInit
 window.onAddMarker = onAddMarker
 window.onPanTo = onPanTo
-window.onGetLocs = onGetLocs
+window.onGetLocs = updateLocsMenu
 window.onGetUserPos = onGetUserPos
 window.onUserAns = onUserAns
 window.onDeleteLoc = onDeleteLoc
@@ -21,7 +21,8 @@ function onInit() {
 
         })
         .catch(() => console.log('Error: cannot init map'))
-    onGetLocs()
+    updateLocsMenu()
+    panByUrlParams()
 }
 
 // This function provides a Promise API to the callback-based-api of getCurrentPosition
@@ -58,9 +59,7 @@ function onUserAns(isAddMarker, lat = null, lng = null) {
     }
 
     infoWindow.close()
-    locService.getLocs()
-        .then(renderLocs)
-
+    updateLocsMenu()
 
 }
 
@@ -69,7 +68,7 @@ function onAddMarker() {
     mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 })
 }
 
-function onGetLocs() {
+function updateLocsMenu() {
     locService.getLocs()
         .then(renderLocs)
 }
@@ -80,7 +79,7 @@ function onGetUserPos() {
             console.log('User position is:', coords)
             document.querySelector('.user-pos').innerText =
                 `Latitude: ${coords.latitude} - Longitude: ${coords.longitude}`
-            mapService.panTo(coords.latitude, coords.longitude)
+            onPanTo(coords.latitude, coords.longitude)
         })
         .catch(err => {
             console.log('err!!!', err)
@@ -88,8 +87,10 @@ function onGetUserPos() {
 }
 function onPanTo(lat = 35.6895, lng = 139.6917) {
     console.log('Panning the Map')
-    mapService.panTo(35.6895, 139.6917)
     mapService.panTo(lat, lng)
+    updateUrlParams(lat, lng)
+
+
 }
 
 
@@ -111,6 +112,22 @@ function renderLocs(locs) {
 function onDeleteLoc(id) {
     console.log('deleting', id)
     locService.deleteLoc(id)
-    locService.getLocs()
-        .then(renderLocs)
+    updateLocsMenu()
+}
+
+function panByUrlParams() {
+    const queryStringParams = new URLSearchParams(window.location.search)
+    const lat = queryStringParams.get('lat')
+    const lng = queryStringParams.get('lng')
+    if (!lat || !lng) return
+    onPanTo(lat, lng)
+}
+
+function updateUrlParams(lat, lng) {
+    const queryStr = `?lat=${lat}&lng=${lng}`
+    const newUrl = window.location.protocol + "//" + window.location.host
+        + window.location.pathname + queryStr
+    window.history.pushState({ path: newUrl }, '', newUrl)
+
+
 }
