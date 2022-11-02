@@ -19,6 +19,10 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
                 zoom: 15
             })
             console.log('Map!', gMap)
+            gMap.addListener("click", (mapsMouseEvent) => {
+                addMarker({ lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() })
+            })
+
         })
 }
 
@@ -28,6 +32,14 @@ function addMarker(loc) {
         map: gMap,
         title: 'Hello World!'
     })
+
+    let infoWindow = new google.maps.InfoWindow({
+        content: "Click the map to get Lat/Lng!",
+        position: loc,
+    });
+
+    infoWindow.open(gMap);
+
     return marker
 }
 
