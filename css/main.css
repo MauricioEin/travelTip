@@ -1,0 +1,18 @@
+html{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.locs {
+    padding:10px;
+    border-radius: 4px;
+    display: flex;
+    gap: 20px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+
+.loc {
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    padding-inline-start: 10px;
+    padding-inline-end: 10px;
+
+}

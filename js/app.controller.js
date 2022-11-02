@@ -58,6 +58,8 @@ function renderLocs(locs) {
 <p class="coords">(${loc.lat},${loc.lng})</p>
 <div class="weather"></div>
 <p class="updated">updated at ${loc.updatedAt || loc.createdAt}</p>
+<button onclick="onGoToLoc('${loc.id}')">Go</button>
+<button onclick="onDeleteLoc('${loc.id}')">Delete</button>
 </article>
 `)
     document.querySelector('.locs').innerHTML = strHTMLs.join('')
