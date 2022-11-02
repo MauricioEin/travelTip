@@ -55,6 +55,10 @@ function onUserAns(isAddMarker,lat =null,lng = null){
     if(isAddMarker) {
         const name = document.querySelector('.info-window-input').value
         mapService.addMarker(name,{lat,lng},'weather','createdAt','updatedAt')
+         markerInfo = new google.maps.InfoWindow({
+        content: name,
+        position: {lat,lng},
+    });
     }
     
     infoWindow.close() 
@@ -89,6 +93,9 @@ function onPanTo(lat = 35.6895, lng = 139.6917) {
     mapService.panTo(lat, lng)
 }
 
+function renderLocsOnMap(){
+    
+}
 
 function renderLocs(locs) {
     console.log('locs', locs)
