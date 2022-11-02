@@ -18,15 +18,23 @@ function onInit() {
     mapService.initMap()
         .then((gMap) => {
             console.log('Map is ready')
+            panByUrlParams()
+
             renderMarkers(gMap)
             gMap.addListener("click", ({ latLng }) => {
                 onAddMarker({ lat: latLng.lat(), lng: latLng.lng() })
             })
-
         })
         .catch(() => console.log('Error: cannot init map'))
+    getPosition()
+        .then(({ coords }) => {
+            document.querySelector('.user-pos').innerText =
+                `Latitude: ${coords.latitude} - Longitude: ${coords.longitude}`
+        })
+
     updateLocsMenu()
-    panByUrlParams()
+    // setTimeout(panByUrlParams, 500)
+
 }
 
 
@@ -103,9 +111,6 @@ function updateLocsMenu() {
 function onGetUserPos() {
     getPosition()
         .then(({ coords }) => {
-            console.log('User position is:', coords)
-            document.querySelector('.user-pos').innerText =
-                `Latitude: ${coords.latitude} - Longitude: ${coords.longitude}`
             onPanTo(coords.latitude, coords.longitude)
         })
         .catch(err => {
@@ -113,8 +118,7 @@ function onGetUserPos() {
         })
 }
 function onPanTo(lat = 35.6895, lng = 139.6917) {
-    console.log('Panning the Map')
-    // mapService.panTo(35.6895, 139.6917)
+    console.log('Panning the Map', lat, lng)
     mapService.panTo(lat, lng)
     updateUrlParams(lat, lng)
 
@@ -126,7 +130,7 @@ function renderLocs(locs) {
     const strHTMLs = locs.map(loc => `
     <article class="loc" data-id="${loc.id}">
         <h3 class="loc-name">${loc.name}</h3>
-        <p class="coords">(${loc.lat},${loc.lng})</p>
+        <p class="coords">(${loc.lat}, ${loc.lng})</p>
         <div class="weather"></div>
         <p class="updated">updated at ${loc.updatedAt || loc.createdAt}</p>
         <button onclick="onPanTo(${loc.lat},${loc.lng})">Go</button>
@@ -174,9 +178,11 @@ function getWeather({ lat, lng }) {
 
 function panByUrlParams() {
     const queryStringParams = new URLSearchParams(window.location.search)
-    const lat = queryStringParams.get('lat')
-    const lng = queryStringParams.get('lng')
+    const lat = +queryStringParams.get('lat')
+    const lng = +queryStringParams.get('lng')
+    console.log('lat,lng:', lat, lng)
     if (!lat || !lng) return
+    console.log('panning')
     onPanTo(lat, lng)
 }
 

@@ -15,7 +15,7 @@ function getLocs() {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve(gLocs)
-        }, 1000)
+        }, 0)
     })
 }
 

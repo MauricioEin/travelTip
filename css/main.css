@@ -1,23 +1,124 @@
-*{
+* {
     box-sizing: border-box;
 }
 
-html{
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+html {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.locs {
-    padding:10px;
-    border-radius: 4px;
+header {
+    padding-bottom: 25px;
+    text-align: center;
+}
+
+header h1 {
+    text-transform: uppercase;
+    font-size: 4rem;
+    margin: .5rem;
+    text-shadow: -2px 2px 5px gold, 1px -1px 6px rgb(43, 84, 78);
+    color: rgb(255, 255, 255);
+
+}
+
+
+
+main {
     display: flex;
-    gap: 20px;
+    flex-direction: row-reverse;
+    padding-inline-start: 15px;
+    padding-inline-end: 15px;
+    gap: 15px;
+}
+
+aside {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    flex-basis: 50%;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    gap: 10px;
+
+}
+
+.loc-title {
+    background-color: rgb(254, 226, 68);
+}
+
+.loc:hover:not(.loc-title){
+    background-color: rgb(248, 246, 230);
+}
+
+#map {
+    border-radius: 8px;
+    box-shadow: 0px 0px 9px rgba(0, 0, 0, 0.4);
+
+}
+
+
+.locs {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow: auto;
 }
 
 .loc {
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
     padding-inline-start: 10px;
     padding-inline-end: 10px;
-    padding-bottom:10px;
+    padding-bottom: 10px;
+    text-align: center;
 
+}
+
+h2.loc {
+    margin: 0;
+}
+
+.loc h3,
+.loc p {
+    margin: 0.5em;
+}
+
+button {
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 999px;
+    background-color: #eaf1f1;
+    padding: 5px 10px;
+    box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.336);
+    margin-inline-start: 4px;
+    margin-inline-end: 4px;
+
+}
+
+button:hover {
+    background-color: rgb(188, 201, 200);
+}
+
+/* SCROLLER */
+/* .scroller {
+    scrollbar-width: thin;
+    scrollbar-color: #19a59f #22252c;
+    overflow-y: scroll;
+    margin-inline-start: 20px;
+} */
+
+.scroller::-webkit-scrollbar {
+    width: 16px;
+}
+
+.scroller::-webkit-scrollbar-track {
+    background: #eaf1f1;
+    border-radius: 13px;
+
+}
+
+.scroller::-webkit-scrollbar-thumb {
+    background-color: rgb(188, 201, 200);
+    border-radius: 13px;
+    border: none;
 }
