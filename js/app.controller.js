@@ -1,6 +1,5 @@
 import { locService } from './services/loc.service.js'
 import { mapService } from './services/map.service.js'
-import { utils } from './services/util.service.js'
 
 window.onload = onInit
 window.onAddMarker = onAddMarker
