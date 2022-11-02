@@ -1,3 +1,7 @@
+*{
+    box-sizing: border-box;
+}
+
 html{
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -14,5 +18,6 @@ html{
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
     padding-inline-start: 10px;
     padding-inline-end: 10px;
+    padding-bottom:10px;
 
 }
