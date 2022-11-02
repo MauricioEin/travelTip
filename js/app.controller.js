@@ -5,7 +5,7 @@ import { utils } from './services/util.service.js'
 window.onload = onInit
 window.onAddMarker = onAddMarker
 window.onPanTo = onPanTo
-window.onGetLocs = onGetLocs
+window.onGetLocs = updateLocsMenu
 window.onGetUserPos = onGetUserPos
 window.onAddLocation = onAddLocation
 window.onDeleteLoc = onDeleteLoc
@@ -24,7 +24,8 @@ function onInit() {
 
         })
         .catch(() => console.log('Error: cannot init map'))
-    onGetLocs()
+    updateLocsMenu()
+    panByUrlParams()
 }
 
 
@@ -69,7 +70,7 @@ function onAddLocation(lat, lng) {
     gMarkers.push(mapService.addMarker(name, { lat, lng }, id))
     locService.saveLoc(name, { lat, lng }, id)
 
-    addInfoWindow(name, lat, lng)
+    // addInfoWindow(name, lat, lng)
 
     closeInfoWindow()
     locService.getLocs()
@@ -83,6 +84,8 @@ function addInfoWindow(name, lat, lng) {
         position: { lat, lng },
     });
     markerInfo.open(mapService.getMap(), { lat, lng })
+    infoWindow.close()
+    updateLocsMenu()
 
 }
 
@@ -91,7 +94,7 @@ function closeInfoWindow() {
 
 }
 
-function onGetLocs() {
+function updateLocsMenu() {
     locService.getLocs()
         .then(renderLocs)
 }
@@ -102,7 +105,7 @@ function onGetUserPos() {
             console.log('User position is:', coords)
             document.querySelector('.user-pos').innerText =
                 `Latitude: ${coords.latitude} - Longitude: ${coords.longitude}`
-            mapService.panTo(coords.latitude, coords.longitude)
+            onPanTo(coords.latitude, coords.longitude)
         })
         .catch(err => {
             console.log('err!!!', err)
@@ -112,6 +115,9 @@ function onPanTo(lat = 35.6895, lng = 139.6917) {
     console.log('Panning the Map')
     // mapService.panTo(35.6895, 139.6917)
     mapService.panTo(lat, lng)
+    updateUrlParams(lat, lng)
+
+
 }
 
 function renderLocs(locs) {
@@ -162,4 +168,22 @@ function getWeather({ lat, lng }) {
     const API_KEY = '9cc0e7fc796283a38fee03bf115264d5'
     const LINK = `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&APPID=${API_KEY}`
     return axios.get(LINK).then(res => res.data)
+    updateLocsMenu()
+}
+
+function panByUrlParams() {
+    const queryStringParams = new URLSearchParams(window.location.search)
+    const lat = queryStringParams.get('lat')
+    const lng = queryStringParams.get('lng')
+    if (!lat || !lng) return
+    onPanTo(lat, lng)
+}
+
+function updateUrlParams(lat, lng) {
+    const queryStr = `?lat=${lat}&lng=${lng}`
+    const newUrl = window.location.protocol + "//" + window.location.host
+        + window.location.pathname + queryStr
+    window.history.pushState({ path: newUrl }, '', newUrl)
+
+
 }

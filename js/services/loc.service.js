@@ -1,4 +1,5 @@
 import { storageService } from './storage.service.js'
+import { utils } from './util.service.js'
 
 
 export const locService = {
@@ -7,8 +8,7 @@ export const locService = {
 
 const STORAGE_KEY = 'savedLocs'
 
-const gLocs = storageService.load(STORAGE_KEY) || _createLocs()
-
+const gLocs = storageService.load(STORAGE_KEY) || _getInitialLocs()
 
 function getLocs() {
     console.log('gLocs:', gLocs)
@@ -45,7 +45,8 @@ function saveLocsToStorage() {
     storageService.save(STORAGE_KEY, gLocs)
 }
 
-function _createLocs() {
+
+function _getInitialLocs() {
     return [
         { id: 1, name: 'Greatplace', lat: 32.047104, lng: 34.832384 },
         { id: 2, name: 'Neveragain', lat: 32.047201, lng: 34.832581 }
