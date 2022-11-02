@@ -11,8 +11,12 @@ window.onMyLoc = onMyLoc
 
 function onInit() {
     mapService.initMap()
-        .then(() => {
+        .then((gMap) => {
             console.log('Map is ready')
+            gMap.addListener("click", (mapsMouseEvent) => {
+                checkAddMarker({ lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() })
+            })
+
         })
         .catch(() => console.log('Error: cannot init map'))
     onGetLocs()
@@ -26,9 +30,28 @@ function getPosition() {
     })
 }
 
+function checkAddMarker(pos) {
+
+
+    let infoWindow = new google.maps.InfoWindow({
+        content: "Click the map to get Lat/Lng!",
+        position: pos,
+    });
+
+    // Create title field and submit button
+    const inputForm = 
+    `Name:  <input type="text" id="nameinput" size="31" maxlength="31" value=""/>
+    <button class="add-marker-btn" onclick="onUserAns(true)">Submit</button>
+    <button class="cancel-marker-btn" onclick="onUserAns(false)">cancel</button>`
+
+    // Set infowindow content
+    infoWindow.setContent(inputForm);
+    infoWindow.open(mapService.getGmap(), pos);
+}
+
 function onAddMarker() {
     console.log('Adding a marker')
-    mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 })
+    mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 }).title("Marker")
 }
 
 function onGetLocs() {
