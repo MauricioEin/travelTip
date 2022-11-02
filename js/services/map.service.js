@@ -1,7 +1,9 @@
+
 export const mapService = {
     initMap,
     addMarker,
-    panTo
+    panTo,
+    getGmap
 }
 
 
@@ -19,10 +21,7 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
                 zoom: 15
             })
             console.log('Map!', gMap)
-            gMap.addListener("click", (mapsMouseEvent) => {
-                addMarker({ lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() })
-            })
-
+            return gMap
         })
 }
 
@@ -33,12 +32,20 @@ function addMarker(loc) {
         title: 'Hello World!'
     })
 
-    let infoWindow = new google.maps.InfoWindow({
-        content: "Click the map to get Lat/Lng!",
-        position: loc,
-    });
+    // let infoWindow = new google.maps.InfoWindow({
+    //     content: "Click the map to get Lat/Lng!",
+    //     position: loc,
+    // });
 
-    infoWindow.open(gMap);
+    //  // Create title field and submit button
+    //  const inputForm = 'Name:  <input type="text" id="nameinput" size="31" maxlength="31" value=""/>' + '<button id="inputButton" data-id="w">Submit</button>';
+
+    //  // Set infowindow content
+    //  infoWindow.setContent(inputForm);
+    //  infoWindow.open(gMap, marker);
+
+
+    // saveLocation({id:'',name:'',lat:loc.lat,lng:lat.lng,weather:'', createdAt:'', updatedAt:''})
 
     return marker
 }
@@ -61,4 +68,8 @@ function _connectGoogleApi() {
         elGoogleApi.onload = resolve
         elGoogleApi.onerror = () => reject('Google script failed to load')
     })
+}
+
+function getGmap(){
+    return gMap
 }
