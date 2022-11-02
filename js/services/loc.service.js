@@ -6,12 +6,13 @@ export const locService = {
 
 const STORAGE_KEY = 'savedLocs'
 
-const gLocs = [
+const gLocs = storageService.load(STORAGE_KEY) || [
     { id: 1, name: 'Greatplace', lat: 32.047104, lng: 34.832384 },
     { id: 2, name: 'Neveragain', lat: 32.047201, lng: 34.832581 }
-] //storageService.load(STORAGE_KEY)
+] 
 
 function getLocs() {
+    console.log('gLocs:',gLocs)
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve(gLocs)
