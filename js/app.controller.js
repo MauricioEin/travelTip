@@ -33,7 +33,7 @@ function getPosition() {
 }
 
 function checkAddMarker(pos) {
-    if(infoWindow) infoWindow.close()
+    if (infoWindow) infoWindow.close()
     infoWindow = new google.maps.InfoWindow({
         content: "Click the map to get Lat/Lng!",
         position: pos,
@@ -41,7 +41,7 @@ function checkAddMarker(pos) {
 
     // const id = utils.makeId()
     const inputForm =
-    `Name:  <input type="text" class="info-window-input" size="31" maxlength="31" value=""/>
+        `Name:  <input type="text" class="info-window-input" size="31" maxlength="31" value=""/>
     <button class="add-marker-btn" onclick="onUserAns(true,${pos.lat},${pos.lng})">Submit</button>
     <button class="add-marker-btn" onclick="onUserAns(false)">cancel</button>`
     // Create title field and submit button
@@ -51,8 +51,8 @@ function checkAddMarker(pos) {
     infoWindow.open(mapService.getGmap(), pos);
 }
 
-function onUserAns(isAddMarker,lat =null,lng = null){
-    if(isAddMarker) {
+function onUserAns(isAddMarker, lat = null, lng = null) {
+    if (isAddMarker) {
         const name = document.querySelector('.info-window-input').value
         mapService.addMarker(name,{lat,lng},'weather','createdAt','updatedAt')
          markerInfo = new google.maps.InfoWindow({
@@ -60,8 +60,11 @@ function onUserAns(isAddMarker,lat =null,lng = null){
         position: {lat,lng},
     });
     }
-    
-    infoWindow.close() 
+
+    infoWindow.close()
+    locService.getLocs()
+        .then(renderLocs)
+
 
 }
 
