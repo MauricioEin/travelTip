@@ -7,9 +7,9 @@ window.onPanTo = onPanTo
 window.onGetLocs = onGetLocs
 window.onGetUserPos = onGetUserPos
 window.onUserAns = onUserAns
+window.onDeleteLoc = onDeleteLoc
 
 var infoWindow
-window.onDeleteLoc = onDeleteLoc
 
 function onInit() {
     mapService.initMap()
@@ -42,7 +42,8 @@ function checkAddMarker(pos) {
     // const id = utils.makeId()
     const inputForm =
     `Name:  <input type="text" class="info-window-input" size="31" maxlength="31" value=""/>
-    <button class="add-marker-btn" onclick="onUserAns(true,${pos.lat},${pos.lng})">Submit</button>`
+    <button class="add-marker-btn" onclick="onUserAns(true,${pos.lat},${pos.lng})">Submit</button>
+    <button class="add-marker-btn" onclick="onUserAns(false)">cancel</button>`
     // Create title field and submit button
 
 
