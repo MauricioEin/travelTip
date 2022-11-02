@@ -30,10 +30,7 @@ function onAddMarker() {
 
 function onGetLocs() {
     locService.getLocs()
-        .then(locs => {
-            console.log('Locations:', locs)
-            document.querySelector('.locs').innerText = JSON.stringify(locs, null, 2)
-        })
+        .then(renderLocs)
 }
 
 function onGetUserPos() {
@@ -50,4 +47,18 @@ function onGetUserPos() {
 function onPanTo() {
     console.log('Panning the Map')
     mapService.panTo(35.6895, 139.6917)
+}
+
+
+function renderLocs(locs) {
+    console.log('locs', locs)
+    const strHTMLs = locs.map(loc => `
+<article class="loc" data-id="${loc.id}">
+<h3 class="loc-name">${loc.name}</h3>
+<p class="coords">(${loc.lat},${loc.lng})</p>
+<div class="weather"></div>
+<p class="updated">updated at ${loc.updatedAt || loc.createdAt}</p>
+</article>
+`)
+    document.querySelector('.locs').innerHTML = strHTMLs.join('')
 }
