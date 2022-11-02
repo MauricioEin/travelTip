@@ -5,7 +5,7 @@ export const mapService = {
     initMap,
     addMarker,
     panTo,
-    getGmap
+    getMap
 }
 
 
@@ -27,17 +27,14 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
         })
 }
 
-function addMarker(name, loc, weather, createdAt, updatedAt) {
+function addMarker(name, pos,id) {
     var marker = new google.maps.Marker({
-        position: loc,
+        id,
+        position: pos,
         map: gMap,
         title: name
     })
-    
-    const date = new Date()
-    const formatedDate = date.toLocaleDateString('fr') + ' ' + date.toLocaleTimeString('fr')
 
-    locService.saveLoc({ id: utils.makeId(), name, lat: loc.lat, lng: loc.lng, weather: '', createdAt: formatedDate, updatedAt: '' })
     return marker
 }
 
@@ -61,6 +58,7 @@ function _connectGoogleApi() {
     })
 }
 
-function getGmap() {
+function getMap() {
     return gMap
 }
+

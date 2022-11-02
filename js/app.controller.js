@@ -1,28 +1,32 @@
 import { locService } from './services/loc.service.js'
 import { mapService } from './services/map.service.js'
+import { utils } from './services/util.service.js'
 
 window.onload = onInit
 window.onAddMarker = onAddMarker
 window.onPanTo = onPanTo
 window.onGetLocs = onGetLocs
 window.onGetUserPos = onGetUserPos
-window.onUserAns = onUserAns
+window.onAddLocation = onAddLocation
 window.onDeleteLoc = onDeleteLoc
 
-var infoWindow
+var gInfoWindow
+var gMarkers
 
 function onInit() {
     mapService.initMap()
         .then((gMap) => {
             console.log('Map is ready')
-            gMap.addListener("click", (mapsMouseEvent) => {
-                checkAddMarker({ lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() })
+            renderMarkers(gMap)
+            gMap.addListener("click", ({ latLng }) => {
+                onAddMarker({ lat: latLng.lat(), lng: latLng.lng() })
             })
 
         })
         .catch(() => console.log('Error: cannot init map'))
     onGetLocs()
 }
+
 
 // This function provides a Promise API to the callback-based-api of getCurrentPosition
 function getPosition() {
@@ -32,45 +36,59 @@ function getPosition() {
     })
 }
 
-function checkAddMarker(pos) {
-    if (infoWindow) infoWindow.close()
-    infoWindow = new google.maps.InfoWindow({
-        content: "Click the map to get Lat/Lng!",
-        position: pos,
-    });
+function onAddMarker(pos) {
+    getWeather(pos).then(res => {
+        if (gInfoWindow) gInfoWindow.close()
 
-    // const id = utils.makeId()
-    const inputForm =
-        `Name:  <input type="text" class="info-window-input" size="31" maxlength="31" value=""/>
-    <button class="add-marker-btn" onclick="onUserAns(true,${pos.lat},${pos.lng})">Submit</button>
-    <button class="add-marker-btn" onclick="onUserAns(false)">cancel</button>`
-    // Create title field and submit button
+        const inputForm =
+            `
+            <div style="display:flex;flex-direction:column;align-items:center;">
+                <img src="https://openweathermap.org/img/w/${res.weather[0].icon}.png" style="width:65px;height:65px;"></img>
+                <h2>${res.weather[0].description}</h2>
+                <h2>${(res.main.temp - 273.15).toFixed(1)}℃</h2>
+                <span>Name:</span>  <input type="text" class="info-window-input" size="31" maxlength="31" value=""/>
+                <div>
+                    <button class="add-marker-btn" onclick="onAddLocation(${pos.lat},${pos.lng})">Submit</button>
+                    <button class="add-marker-btn" onclick="closeInfoWindow()">cancel</button>
+                </div>               
+            </div>`
 
+        gInfoWindow = new google.maps.InfoWindow({
+            content: inputForm,
+            position: pos,
+        });
 
-    infoWindow.setContent(inputForm);
-    infoWindow.open(mapService.getGmap(), pos);
+        gInfoWindow.setContent(inputForm);
+        gInfoWindow.open(mapService.getMap(), pos);
+    })
 }
 
-function onUserAns(isAddMarker, lat = null, lng = null) {
-    if (isAddMarker) {
-        const name = document.querySelector('.info-window-input').value
-        mapService.addMarker(name,{lat,lng},'weather','createdAt','updatedAt')
-         markerInfo = new google.maps.InfoWindow({
-        content: name,
-        position: {lat,lng},
-    });
-    }
+function onAddLocation(lat, lng) {
+    const name = document.querySelector('.info-window-input').value
+    const id = utils.makeId()
+    gMarkers.push(mapService.addMarker(name, { lat, lng }, id))
+    locService.saveLoc(name, { lat, lng }, id)
 
-    infoWindow.close()
+    addInfoWindow(name, lat, lng)
+
+    closeInfoWindow()
     locService.getLocs()
         .then(renderLocs)
 
+}
+
+function addInfoWindow(name, lat, lng) {
+    let markerInfo = new google.maps.InfoWindow({
+        content: name,
+        position: { lat, lng },
+    });
+    markerInfo.open(mapService.getMap(), { lat, lng })
 
 }
 
-function onAddMarker() {
-    console.log('Adding a marker')
-    mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 })
+function closeInfoWindow() {
+    gInfoWindow.close()
+
 }
 
 function onGetLocs() {
@@ -92,32 +110,56 @@ function onGetUserPos() {
 }
 function onPanTo(lat = 35.6895, lng = 139.6917) {
     console.log('Panning the Map')
-    mapService.panTo(35.6895, 139.6917)
+    // mapService.panTo(35.6895, 139.6917)
     mapService.panTo(lat, lng)
 }
 
-function renderLocsOnMap(){
-    
-}
-
 function renderLocs(locs) {
-    console.log('locs', locs)
+    // console.log('locs', locs)
     const strHTMLs = locs.map(loc => `
-<article class="loc" data-id="${loc.id}">
-<h3 class="loc-name">${loc.name}</h3>
-<p class="coords">(${loc.lat},${loc.lng})</p>
-<div class="weather"></div>
-<p class="updated">updated at ${loc.updatedAt || loc.createdAt}</p>
-<button onclick="onPanTo(${loc.lat},${loc.lng})">Go</button>
-<button onclick="onDeleteLoc('${loc.id}')">Delete</button>
-</article>
+    <article class="loc" data-id="${loc.id}">
+        <h3 class="loc-name">${loc.name}</h3>
+        <p class="coords">(${loc.lat},${loc.lng})</p>
+        <div class="weather"></div>
+        <p class="updated">updated at ${loc.updatedAt || loc.createdAt}</p>
+        <button onclick="onPanTo(${loc.lat},${loc.lng})">Go</button>
+        <button onclick="onDeleteLoc('${loc.id}')">Delete</button>
+    </article>
 `)
     document.querySelector('.locs').innerHTML = strHTMLs.join('')
 }
 
 function onDeleteLoc(id) {
     console.log('deleting', id)
+    deleteMarker(id)
     locService.deleteLoc(id)
     locService.getLocs()
         .then(renderLocs)
+}
+
+function deleteMarker(id) {
+    console.log(id);
+    console.log(gMarkers);
+    gMarkers.find((marker) => marker.id === id).setMap(null)
+}
+
+function renderMarkers(map = mapService.getMap()) {
+    locService.getLocs().then(locs => {
+        gMarkers = locs.map((loc) => {
+            // addInfoWindow(loc.name, loc.lat, loc.lng)
+            return new google.maps.Marker({
+                id: loc.id,
+                position: { lat: loc.lat, lng: loc.lng },
+                map,
+                title: loc.name
+            })
+        })
+    })
+}
+
+
+function getWeather({ lat, lng }) {
+    const API_KEY = '9cc0e7fc796283a38fee03bf115264d5'
+    const LINK = `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&APPID=${API_KEY}`
+    return axios.get(LINK).then(res => res.data)
 }
