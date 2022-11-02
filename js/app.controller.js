@@ -9,6 +9,7 @@ window.onGetLocs = updateLocsMenu
 window.onGetUserPos = onGetUserPos
 window.onAddLocation = onAddLocation
 window.onDeleteLoc = onDeleteLoc
+window.closeInfoWindow = closeInfoWindow
 
 var gInfoWindow
 var gMarkers
